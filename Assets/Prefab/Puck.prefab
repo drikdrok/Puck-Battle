@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.00000014499, y: 1.1, z: -13.3}
-  m_LocalScale: {x: 3, y: 0.2, z: 3}
+  m_LocalScale: {x: 3, y: 0.39504, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -93,7 +93,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8514466212819143792}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 92810b13d9c18d44abc512b961c0d467, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -148,5 +148,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canShoot: 0
+  shotPower: 40
+  poweredUp: none
   puckMaterial: {fileID: 2100000, guid: 40a5f033f875db94380cbc22412a7983, type: 2}
   poweredMaterial: {fileID: 2100000, guid: 3ed957c28da969e42b813d0be76d8638, type: 2}
+  poweredYetiMaterial: {fileID: 2100000, guid: f832d7d3bbc80414e9edc9f8361a7ef2, type: 2}
+  frozenMaterial: {fileID: 2100000, guid: 58d74d169d4af854b955b444da267da7, type: 2}
+  isInPlayerHalf: 0

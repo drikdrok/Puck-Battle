@@ -16,8 +16,6 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 mousePos;
 
-    private float shotPower = 40;
-
     [SerializeField] GameManager gameManager;
 
 
@@ -75,7 +73,7 @@ public class PlayerController : MonoBehaviour
                 if (power.GetValue() >= 1)
                 {
                     power.SetValue(0);
-                    puck.SetPowered(true);
+                    puck.SetPowered(StartManager.playerName);
                 }
             }
 
@@ -153,14 +151,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetMouseButtonUp(1))
             {
-                Rigidbody rigidbody = puck.gameObject.GetComponent<Rigidbody>();
-
-                if (puck.isPowered())
-                {
-                    shotLoad *= 3;
-                }
-                
-                rigidbody.velocity = shotLoad * shotPower;
+                puck.Shoot(shotLoad, "Player");
 
                 shooting = false;
 

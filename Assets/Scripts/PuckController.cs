@@ -9,24 +9,34 @@ public class PuckController : MonoBehaviour
 
     public bool canShoot = false;
 
+    public float shotPower = 40;
 
+    public string poweredUp = "none";
 
-    private bool poweredUp = false;
 
     [SerializeField] private Material puckMaterial;
     [SerializeField] private Material poweredMaterial;
+    [SerializeField] private Material poweredYetiMaterial;
+    [SerializeField] private Material frozenMaterial;
 
     private Vector3 spawnPoint;
 
     public bool isInPlayerHalf = false;
+    public string shotBy = "none";
 
     private ScoreHandler playerScore;
     private ScoreHandler enemyScore;
 
 
+    private MeshRenderer meshRenderer;
+
+    private bool frozen = false;
+
+
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
+        meshRenderer = GetComponent<MeshRenderer>();
         spawnPoint = transform.position;
     }
 
@@ -61,18 +71,23 @@ public class PuckController : MonoBehaviour
         {
             if (!isInPlayerHalf)
             {
-                playerScore.AddScore(1);
+                if (playerScore)
+                {
+                    playerScore.AddScore(1);
+                }
             }
             else
             {
-                enemyScore.AddScore(1);
+                if (enemyScore) { 
+                    enemyScore.AddScore(1);
+                }
             }
 
 
 
             transform.position = spawnPoint;
             rigidbody.velocity = Vector3.zero;
-            poweredUp = false;
+            DePower();
         }
         else if (other.transform.CompareTag("AimTarget"))
         {
@@ -91,27 +106,76 @@ public class PuckController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Puck"))
         {
-            SetPowered(false);
+
+            if (poweredUp == "Yeti")
+            {
+                PuckController other = collision.gameObject.GetComponent<PuckController>();
+                if (shotBy == "Player" && !other.isInPlayerHalf)
+                {
+                    other.StartCoroutine(other.Freeze());
+                }else if (shotBy == "Enemy" && other.isInPlayerHalf)
+                {
+                    other.StartCoroutine(other.Freeze());
+                }
+            }
+
+            DePower();
+        }
+        else if (!collision.gameObject.CompareTag("Ground"))
+        {
+            DePower();
         }
     }
 
-    public void SetPowered(bool enabled)
+    public void SetPowered(string type)
     {
-        if (enabled)
+        poweredUp = type;
+        if (type == "Yeti")
         {
-            GetComponent<MeshRenderer>().material = poweredMaterial;
+            meshRenderer.material = poweredYetiMaterial;
         }
         else
         {
-            GetComponent<MeshRenderer>().material = puckMaterial;
+            meshRenderer.material = poweredMaterial;
         }
     }
 
-    public bool isPowered()
+    public void DePower()
     {
-        return poweredUp;
+        if (!frozen)
+        {
+            meshRenderer.material = puckMaterial;
+            poweredUp = "none";
+        }
+    }
+
+
+    public void Shoot(Vector3 direction, string _shotBy)
+    {
+        rigidbody.velocity = direction * shotPower;
+        shotBy = _shotBy;
+    }
+
+
+    public IEnumerator Freeze()
+    {
+        if (poweredUp != "none")
+        {
+            yield return null;
+        }
+
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.isKinematic = true;
+        frozen = true;
+        meshRenderer.material = frozenMaterial;
+
+        yield return new WaitForSeconds(5);
+
+        rigidbody.isKinematic = false;
+        frozen = false;
+        meshRenderer.material = puckMaterial;
     }
 
 }

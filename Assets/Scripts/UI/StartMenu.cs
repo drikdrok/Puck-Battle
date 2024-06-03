@@ -64,7 +64,7 @@ public class StartMenu : MonoBehaviour
 
     public void ResetEverything()
     {
-
+        PlayerPrefs.SetInt("DoTutorial", 1);
     }
 
 

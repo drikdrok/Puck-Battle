@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -60,6 +59,12 @@ public class GameManager : MonoBehaviour
 
 
         endScreen.SetActive(false);
+
+        if (PlayerPrefs.GetInt("DoTutorial") == 1)
+        {
+            doingTutorial = true;
+            PlayerPrefs.SetInt("DoTutorial", 0);
+        }
 
     }
 
@@ -132,7 +137,7 @@ public class GameManager : MonoBehaviour
             }
 
             string secondsText = seconds.ToString();
-            if (seconds < 10) secondsText = "0" + secondsText;
+            if (seconds <= 9) secondsText = "0" + secondsText;
 
             timerText.text = minutes.ToString() + ":" + secondsText;
 
@@ -164,7 +169,7 @@ public class GameManager : MonoBehaviour
         }
 
         string secondsText = seconds.ToString();
-        if (seconds < 9) secondsText = "0" + secondsText;
+        if (seconds <= 9) secondsText = "0" + secondsText;
 
         timerText.text = minutes.ToString() + ":" + secondsText;
         StartCoroutine(DoTimer());

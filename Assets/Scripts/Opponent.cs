@@ -57,7 +57,7 @@ public class Opponent : MonoBehaviour
             PuckController puck = selected.GetComponent<PuckController>();
             if (power && power.GetValue() >= 1)
             {
-                puck.SetPowered(true);
+                puck.SetPowered(StartManager.enemyName);
                 power.SetValue(0);
             }
             selected.transform.position = Vector3.Lerp(selected.transform.position, shootAreaTarget.position, 3 * Time.deltaTime);
@@ -66,11 +66,7 @@ public class Opponent : MonoBehaviour
             {
                 puck.transform.LookAt(targets[Random.Range(0, targets.Length)].transform);
 
-                rb.AddForce(50 * rb.transform.forward, ForceMode.VelocityChange);
-                if (puck.isPowered())
-                {
-                    rb.velocity *= 3;
-                }
+                puck.Shoot(puck.transform.forward, "Enemy");
 
                 selected = null;
                 timer = Random.Range(-0.1f, 0.1f);
