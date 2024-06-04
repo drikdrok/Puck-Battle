@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -19,7 +20,8 @@ public class PuckController : MonoBehaviour
     [SerializeField] private Material poweredYetiMaterial;
     [SerializeField] private Material frozenMaterial;
 
-    private Vector3 spawnPoint;
+    public bool respawnOnGoal = true;
+    public int spawnHalf = -1;
 
     public bool isInPlayerHalf = false;
     public string shotBy = "none";
@@ -32,12 +34,17 @@ public class PuckController : MonoBehaviour
 
     private bool frozen = false;
 
+    private bool invulnerable = false;
+
+
+    private Transform vikingPuck1;
+    private Transform vikingPuck2;
+
 
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
         meshRenderer = GetComponent<MeshRenderer>();
-        spawnPoint = transform.position;
     }
 
     void Update()
@@ -83,11 +90,12 @@ public class PuckController : MonoBehaviour
                 }
             }
 
-
-
-            transform.position = spawnPoint;
-            rigidbody.velocity = Vector3.zero;
-            DePower();
+            if (respawnOnGoal)
+            {
+                PuckSpawner.instance.NewPuck();
+            }
+            
+            Destroy(gameObject);
         }
         else if (other.transform.CompareTag("AimTarget"))
         {
@@ -114,14 +122,32 @@ public class PuckController : MonoBehaviour
                 PuckController other = collision.gameObject.GetComponent<PuckController>();
                 if (shotBy == "Player" && !other.isInPlayerHalf)
                 {
-                    other.StartCoroutine(other.Freeze());
-                }else if (shotBy == "Enemy" && other.isInPlayerHalf)
-                {
-                    other.StartCoroutine(other.Freeze());
+                    DePower();
+                    if (other.poweredUp == "Yeti")
+                    {
+                        other.DePower();
+                    }
+                    else
+                    {
+                        other.StartCoroutine(other.Freeze());
+
+                    }
                 }
+                else if (shotBy == "Enemy" && other.isInPlayerHalf)
+                {
+                    DePower();
+                    if (other.poweredUp == "Yeti")
+                    {
+                        other.DePower();
+                    }
+                    else
+                    {
+                        other.StartCoroutine(other.Freeze());
+                    }
+                }
+                
             }
 
-            DePower();
         }
         else if (!collision.gameObject.CompareTag("Ground"))
         {
@@ -131,10 +157,20 @@ public class PuckController : MonoBehaviour
 
     public void SetPowered(string type)
     {
+        if (poweredUp != "none")
+        {
+            return;
+        }
+
         poweredUp = type;
         if (type == "Yeti")
         {
             meshRenderer.material = poweredYetiMaterial;
+        }else if (type == "Viking")
+        {
+            meshRenderer.material = poweredMaterial;
+            vikingPuck1 = PuckSpawner.instance.NewVikingPuck(transform.position + transform.right * 2);
+            vikingPuck2 = PuckSpawner.instance.NewVikingPuck(transform.position - transform.right * 2);
         }
         else
         {
@@ -148,6 +184,11 @@ public class PuckController : MonoBehaviour
         {
             meshRenderer.material = puckMaterial;
             poweredUp = "none";
+
+            vikingPuck1 = null;
+            vikingPuck2 = null;
+
+            BecomeInvulnerable(0.1f);
         }
     }
 
@@ -156,14 +197,25 @@ public class PuckController : MonoBehaviour
     {
         rigidbody.velocity = direction * shotPower;
         shotBy = _shotBy;
+
+        if (poweredUp == "Yeti")
+        {
+            DepowerInSeconds(3);
+        }else if (poweredUp == "Viking")
+        {
+            DePower();
+            vikingPuck1.GetComponent<Rigidbody>().velocity = rigidbody.velocity;
+            vikingPuck2.GetComponent<Rigidbody>().velocity = rigidbody.velocity;
+        }
     }
 
 
     public IEnumerator Freeze()
     {
-        if (poweredUp != "none")
+        if (poweredUp != "none" || invulnerable == true)
         {
-            yield return null;
+            Debug.Log("Should happen");
+            yield break;
         }
 
         rigidbody.velocity = Vector3.zero;
@@ -178,4 +230,18 @@ public class PuckController : MonoBehaviour
         meshRenderer.material = puckMaterial;
     }
 
+    public IEnumerator BecomeInvulnerable(float duration)
+    {
+        invulnerable = true;
+
+        yield return new WaitForSeconds(duration);
+
+        invulnerable = false;
+    }
+
+    public IEnumerator DepowerInSeconds(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        DePower();
+    }
 }

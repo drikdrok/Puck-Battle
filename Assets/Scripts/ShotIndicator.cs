@@ -42,6 +42,8 @@ public class ShotIndicator : MonoBehaviour
         {
             s3.position = startPos + direction * 2 * (Mathf.Clamp((power - 0.6f) / 0.4f, 0, 1));
         }
+
+        puck.LookAt(s2);
     }
 
     public void SetAngle(float angle)

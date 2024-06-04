@@ -70,7 +70,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (power.GetValue() >= 1)
+                if (power.GetValue() >= 1 && puck.poweredUp == "none")
                 {
                     power.SetValue(0);
                     puck.SetPowered(StartManager.playerName);

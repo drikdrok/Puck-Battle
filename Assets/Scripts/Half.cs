@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -25,7 +26,13 @@ public class Half : MonoBehaviour
         if (other.gameObject.CompareTag("Puck"))
         {
             pucks.Add(other.transform);
-            other.GetComponent<PuckController>().isInPlayerHalf = isPlayerHalf;
+            PuckController p = other.GetComponent<PuckController>();
+            p.isInPlayerHalf = isPlayerHalf;
+
+            if (p.spawnHalf == -1)
+            {
+                p.spawnHalf = isPlayerHalf ? 1 : 0;
+            }
         }
     }
 

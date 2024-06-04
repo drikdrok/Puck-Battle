@@ -4130,6 +4130,7 @@ GameObject:
   - component: {fileID: 612255703}
   - component: {fileID: 612255702}
   - component: {fileID: 612255704}
+  - component: {fileID: 612255705}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -4196,6 +4197,23 @@ MonoBehaviour:
   timerText: {fileID: 395895205}
   panel: {fileID: 2099657596}
   paused: 0
+--- !u!114 &612255705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612255700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d1437284073414d933c8d3c090eca3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PuckPrefab: {fileID: 8514466212819143792, guid: 1ad774e5d3fee6c42bed21cb1ed2a5dc,
+    type: 3}
+  playerHalf: {fileID: 0}
+  enemyHalf: {fileID: 0}
+  newPuckThreshold: 5
 --- !u!1 &619688797
 GameObject:
   m_ObjectHideFlags: 0
@@ -10696,6 +10714,7 @@ MonoBehaviour:
   area: {fileID: 1254367997511313416}
   selected: {fileID: 0}
   shootAreaTarget: {fileID: 3480009481457152763}
+  disabled: 1
 --- !u!4 &1414956252
 Transform:
   m_ObjectHideFlags: 0

@@ -18,6 +18,9 @@ public class Opponent : MonoBehaviour
 
     private GameObject[] targets;
 
+
+    public bool disabled = false;
+
     void Start()
     {
         power = GetComponent<Power>();
@@ -37,6 +40,10 @@ public class Opponent : MonoBehaviour
 
     void Update()
     {
+        if (disabled)
+        {
+            return;
+        }
 
         if (area.pucks.Count > 0)
         {

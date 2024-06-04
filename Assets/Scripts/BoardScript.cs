@@ -26,24 +26,25 @@ public class BoardScript : MonoBehaviour
     {
         disableAll();
 
+        Transform playerHalf = playerJoeHalves[Random.Range(0, playerJoeHalves.Length)];
         if (StartManager.playerName == "Joe")
         {
-            Transform playerHalf = playerJoeHalves[Random.Range(0, playerJoeHalves.Length)];
+            playerHalf = playerJoeHalves[Random.Range(0, playerJoeHalves.Length)];
             playerHalf.gameObject.SetActive(true);
             playerHalf.position = new Vector3(0, 0, 0);
         }else if (StartManager.playerName == "Mummy")
         {
-            Transform playerHalf = playerMummyHalves[Random.Range(0, playerMummyHalves.Length)];
+            playerHalf = playerMummyHalves[Random.Range(0, playerMummyHalves.Length)];
             playerHalf.gameObject.SetActive(true);
             playerHalf.position = new Vector3(0, 0, 0);
         } else if (StartManager.playerName == "Viking")
         {
-            Transform playerHalf = playerVikingHalves[Random.Range(0, playerVikingHalves.Length)];
+            playerHalf = playerVikingHalves[Random.Range(0, playerVikingHalves.Length)];
             playerHalf.gameObject.SetActive(true);
             playerHalf.position = new Vector3(0, 0, 0);
         }else if (StartManager.playerName == "Yeti")
         {
-            Transform playerHalf = playerYetiHalves[Random.Range(0, playerYetiHalves.Length - 1)];
+            playerHalf = playerYetiHalves[Random.Range(0, playerYetiHalves.Length - 1)];
             playerHalf.gameObject.SetActive(true);
             playerHalf.position = new Vector3(0, 0, 0);
         }
@@ -76,6 +77,9 @@ public class BoardScript : MonoBehaviour
         }
 
         enemy.area = enemyHalf.GetComponent<Half>();
+
+        PuckSpawner.instance.playerHalf = playerHalf.GetComponent<Half>();
+        PuckSpawner.instance.enemyHalf = enemyHalf.GetComponent<Half>();
     }
 
     private void disableAll()
