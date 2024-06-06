@@ -4,6 +4,6 @@ using UnityEngine;
 
 public static class StartManager
 {
-    public static string playerName = "Viking";
-    public static string enemyName = "Viking";
+    public static string playerName = "Mummy";
+    public static string enemyName = "Mummy";
 }

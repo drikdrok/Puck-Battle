@@ -39,6 +39,10 @@ public class PlayerController : MonoBehaviour
             {
                 puck = hit.collider.gameObject.GetComponent<PuckController>();
 
+                if (puck.shotBy == "enemy" && puck.poweredUp != "none")
+                {
+                    puck = null;
+                }
             }
             else
             {

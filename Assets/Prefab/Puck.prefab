@@ -1,5 +1,51 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6582064061574204206
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4338606412278740087}
+  - component: {fileID: 4209353569423332497}
+  m_Layer: 2
+  m_Name: Repulse
+  m_TagString: Repulser
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4338606412278740087
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6582064061574204206}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6462925010796017483}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4209353569423332497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6582064061574204206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cfccd7db6107d440a2f531a29bf0b04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  repulseForce: 15000
+  parent: {fileID: 0}
 --- !u!1 &8514466212819143792
 GameObject:
   m_ObjectHideFlags: 0
@@ -31,9 +77,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.00000014499, y: 1.1, z: -13.3}
-  m_LocalScale: {x: 3, y: 0.39504, z: 3}
+  m_LocalScale: {x: 3, y: 0.4, z: 3}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4338606412278740087}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1963640189008091725
@@ -154,4 +201,9 @@ MonoBehaviour:
   poweredMaterial: {fileID: 2100000, guid: 3ed957c28da969e42b813d0be76d8638, type: 2}
   poweredYetiMaterial: {fileID: 2100000, guid: f832d7d3bbc80414e9edc9f8361a7ef2, type: 2}
   frozenMaterial: {fileID: 2100000, guid: 58d74d169d4af854b955b444da267da7, type: 2}
+  respawnOnGoal: 1
+  spawnHalf: -1
   isInPlayerHalf: 0
+  shotBy: none
+  tornadoPrefab: {fileID: 1600145308728766, guid: b40475ab50920c840ac6b88fb45bf9dd,
+    type: 3}

@@ -1,3 +1,4 @@
+using PolygonArsenal;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime;
@@ -40,15 +41,30 @@ public class PuckController : MonoBehaviour
     private Transform vikingPuck1;
     private Transform vikingPuck2;
 
+    [SerializeField] private GameObject tornadoPrefab;
+    private Transform tornado;
+    private GameObject repulse;
+
 
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
+        rigidbody.maxAngularVelocity = 5;
         meshRenderer = GetComponent<MeshRenderer>();
+
+        tornado = Instantiate(tornadoPrefab, transform.position, Quaternion.Euler(-90, 0, 0)).GetComponent<Transform>();
+        tornado.localScale = Vector3.one * 2.5f;
+        tornado.GetComponent<ParticleSystem>().Stop();
+
+        repulse = GetComponentInChildren<Repulse>().gameObject;
+        repulse.GetComponent<Repulse>().parent = gameObject;
+        repulse.SetActive(false);
+
     }
 
     void Update()
     {
+        tornado.position = transform.position;
         //For some reason this can't go in start
         if (!playerScore)
         {
@@ -94,7 +110,8 @@ public class PuckController : MonoBehaviour
             {
                 PuckSpawner.instance.NewPuck();
             }
-            
+
+            Destroy(tornado.gameObject);
             Destroy(gameObject);
         }
         else if (other.transform.CompareTag("AimTarget"))
@@ -171,6 +188,11 @@ public class PuckController : MonoBehaviour
             meshRenderer.material = poweredMaterial;
             vikingPuck1 = PuckSpawner.instance.NewVikingPuck(transform.position + transform.right * 2);
             vikingPuck2 = PuckSpawner.instance.NewVikingPuck(transform.position - transform.right * 2);
+        }else if (type == "Mummy")
+        {
+            tornado.GetComponent<ParticleSystem>().Play();
+            repulse.SetActive(true);
+            StartCoroutine(DepowerInSeconds(3));
         }
         else
         {
@@ -180,13 +202,21 @@ public class PuckController : MonoBehaviour
 
     public void DePower()
     {
+
+        if (poweredUp == "none") { return; }
+
         if (!frozen)
         {
             meshRenderer.material = puckMaterial;
             poweredUp = "none";
 
+            //Viking
             vikingPuck1 = null;
             vikingPuck2 = null;
+
+            //Mummy
+            tornado.GetComponent<ParticleSystem>().Stop();
+            repulse.SetActive(false);
 
             BecomeInvulnerable(0.1f);
         }
@@ -200,7 +230,7 @@ public class PuckController : MonoBehaviour
 
         if (poweredUp == "Yeti")
         {
-            DepowerInSeconds(3);
+            StartCoroutine(DepowerInSeconds(3));
         }else if (poweredUp == "Viking")
         {
             DePower();

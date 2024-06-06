@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class Opponent : MonoBehaviour
     public Half area;
 
     public Transform selected;
+    private List<Transform> shootAreas = new List<Transform>();
     public Transform shootAreaTarget;
 
     private Power power;
@@ -30,12 +32,12 @@ public class Opponent : MonoBehaviour
         //Find a shoot area
         foreach(Transform t in area.transform)
         {
-            if (t.CompareTag("ShootArea"))
+            if (t.gameObject.CompareTag("ShootArea"))
             {
-                shootAreaTarget = t;
-                break;
+                shootAreas.Add(t.gameObject.transform);
             }
         }
+        Debug.Log("Length of shoot areas: " + shootAreas.Count);
     }
 
     void Update()
@@ -53,8 +55,10 @@ public class Opponent : MonoBehaviour
 
         if (timer > 2 && area.pucks.Count > 0)
         {
-            int index = Random.Range(0, area.pucks.Count - 1);
+            int index = Random.Range(0, area.pucks.Count);
             selected = area.pucks[index];
+            Debug.Log("areas: " + shootAreas.Count);
+            shootAreaTarget = shootAreas[Random.Range(0, shootAreas.Count)];
             timer = 0;
         }
 
