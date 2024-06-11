@@ -44,7 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cfccd7db6107d440a2f531a29bf0b04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  repulseForce: 15000
   parent: {fileID: 0}
 --- !u!1 &8514466212819143792
 GameObject:
@@ -206,4 +205,7 @@ MonoBehaviour:
   isInPlayerHalf: 0
   shotBy: none
   tornadoPrefab: {fileID: 1600145308728766, guid: b40475ab50920c840ac6b88fb45bf9dd,
+    type: 3}
+  currentHalf: {fileID: 0}
+  firePrefab: {fileID: 8783739166163645426, guid: 0c8cd653c6532544392d3ee7206acd98,
     type: 3}

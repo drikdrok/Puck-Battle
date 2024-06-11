@@ -153,7 +153,7 @@ public class PlayerController : MonoBehaviour
             shotIndicator.gameObject.SetActive(true);
 
 
-            if (Input.GetMouseButtonUp(1))
+            if (Input.GetMouseButtonUp(1) && puck)
             {
                 puck.Shoot(shotLoad, "Player");
 

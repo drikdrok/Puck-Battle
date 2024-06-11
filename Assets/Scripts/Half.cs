@@ -28,6 +28,7 @@ public class Half : MonoBehaviour
             pucks.Add(other.transform);
             PuckController p = other.GetComponent<PuckController>();
             p.isInPlayerHalf = isPlayerHalf;
+            p.currentHalf = this;
 
             if (p.spawnHalf == -1)
             {

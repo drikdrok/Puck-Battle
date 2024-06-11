@@ -1,6 +1,8 @@
 using PolygonArsenal;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -30,7 +32,6 @@ public class PuckController : MonoBehaviour
     private ScoreHandler playerScore;
     private ScoreHandler enemyScore;
 
-
     private MeshRenderer meshRenderer;
 
     private bool frozen = false;
@@ -45,6 +46,16 @@ public class PuckController : MonoBehaviour
     private Transform tornado;
     private GameObject repulse;
 
+    public Half currentHalf;
+
+
+    private float scaleFactor = 1;
+    private Vector3 scaleVec;
+    private int bounces = 0;
+
+    [SerializeField] private GameObject firePrefab;
+    private Transform fireFlame;
+
 
     void Start()
     {
@@ -56,15 +67,21 @@ public class PuckController : MonoBehaviour
         tornado.localScale = Vector3.one * 2.5f;
         tornado.GetComponent<ParticleSystem>().Stop();
 
+        fireFlame = Instantiate(firePrefab, transform.position, Quaternion.Euler(-90, 0, 0)).GetComponent<Transform>();
+        fireFlame.GetComponent<ParticleSystem>().Stop();
+
         repulse = GetComponentInChildren<Repulse>().gameObject;
         repulse.GetComponent<Repulse>().parent = gameObject;
         repulse.SetActive(false);
+
+        scaleVec = transform.localScale;
 
     }
 
     void Update()
     {
         tornado.position = transform.position;
+        fireFlame.position = transform.position;
         //For some reason this can't go in start
         if (!playerScore)
         {
@@ -106,12 +123,20 @@ public class PuckController : MonoBehaviour
                 }
             }
 
+            //Score goal, remove puck
+            if (currentHalf)
+            {
+                currentHalf.pucks.Remove(transform);
+            }
+
+
             if (respawnOnGoal)
             {
                 PuckSpawner.instance.NewPuck();
             }
 
             Destroy(tornado.gameObject);
+            Destroy(fireFlame.gameObject);
             Destroy(gameObject);
         }
         else if (other.transform.CompareTag("AimTarget"))
@@ -133,7 +158,7 @@ public class PuckController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Puck"))
         {
-
+            bounces++;
             if (poweredUp == "Yeti")
             {
                 PuckController other = collision.gameObject.GetComponent<PuckController>();
@@ -168,6 +193,7 @@ public class PuckController : MonoBehaviour
         }
         else if (!collision.gameObject.CompareTag("Ground"))
         {
+            bounces++;
             DePower();
         }
     }
@@ -185,14 +211,19 @@ public class PuckController : MonoBehaviour
             meshRenderer.material = poweredYetiMaterial;
         }else if (type == "Viking")
         {
-            meshRenderer.material = poweredMaterial;
-            vikingPuck1 = PuckSpawner.instance.NewVikingPuck(transform.position + transform.right * 2);
-            vikingPuck2 = PuckSpawner.instance.NewVikingPuck(transform.position - transform.right * 2);
-        }else if (type == "Mummy")
+            //meshRenderer.material = poweredMaterial;
+            StartCoroutine(StartGrowing());
+            fireFlame.GetComponent<ParticleSystem>().Play();
+        }
+        else if (type == "Mummy")
         {
             tornado.GetComponent<ParticleSystem>().Play();
             repulse.SetActive(true);
             StartCoroutine(DepowerInSeconds(3));
+        }else if (type == "Joe")
+        {
+            meshRenderer.material = poweredMaterial;
+            shotPower = 55;
         }
         else
         {
@@ -202,6 +233,7 @@ public class PuckController : MonoBehaviour
 
     public void DePower()
     {
+        if (poweredUp == "Viking" && bounces < 3) { return; }
 
         if (poweredUp == "none") { return; }
 
@@ -209,10 +241,11 @@ public class PuckController : MonoBehaviour
         {
             meshRenderer.material = puckMaterial;
             poweredUp = "none";
+            shotPower = 40;
 
             //Viking
-            vikingPuck1 = null;
-            vikingPuck2 = null;
+            StartCoroutine(StartShrinking());
+            fireFlame.GetComponent<ParticleSystem>().Stop();
 
             //Mummy
             tornado.GetComponent<ParticleSystem>().Stop();
@@ -231,11 +264,6 @@ public class PuckController : MonoBehaviour
         if (poweredUp == "Yeti")
         {
             StartCoroutine(DepowerInSeconds(3));
-        }else if (poweredUp == "Viking")
-        {
-            DePower();
-            vikingPuck1.GetComponent<Rigidbody>().velocity = rigidbody.velocity;
-            vikingPuck2.GetComponent<Rigidbody>().velocity = rigidbody.velocity;
         }
     }
 
@@ -273,5 +301,36 @@ public class PuckController : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         DePower();
+    }
+
+    public IEnumerator StartGrowing()
+    {
+        scaleFactor += Mathf.Lerp(1, 1.35f, scaleFactor) * Time.deltaTime;
+        transform.localScale = scaleVec * scaleFactor;
+        rigidbody.mass = 5;
+        rigidbody.drag = 1;
+        rigidbody.angularDrag = 0.5f;
+        shotPower = 70;
+        yield return 0; // Wait 1 frame
+        if (scaleFactor <= 1.5f)
+        {
+            StartCoroutine(StartGrowing());
+        }
+
+    }
+
+    public IEnumerator StartShrinking()
+    {
+        scaleFactor -= Mathf.Lerp(1, 1.5f, scaleFactor) * Time.deltaTime;
+        transform.localScale = scaleVec * scaleFactor;
+        rigidbody.mass = 1;
+        rigidbody.drag = 0;
+        rigidbody.angularDrag = 0.05f;
+        shotPower = 40;
+        yield return 0; // Wait 1 frame
+        if (scaleFactor > 1f)
+        {
+            StartCoroutine(StartShrinking());
+        }
     }
 }

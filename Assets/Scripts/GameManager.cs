@@ -42,6 +42,8 @@ public class GameManager : MonoBehaviour
 
     bool overtime = false;
 
+    bool hasDoneStats = false;
+
     void Start()
     {
 
@@ -154,8 +156,28 @@ public class GameManager : MonoBehaviour
         {
             if (minutes == 0) // Game is over
             {
-                overtime = true;
-                DoOvertime();
+
+                int playerScore = player.GetComponent<ScoreHandler>().score;
+                int enemyScore = enemy.GetComponent<ScoreHandler>().score;
+
+                if (playerScore == enemyScore)
+                {
+                    overtime = true;
+                }else if (playerScore > enemyScore)
+                {
+                    StatsWin(false);
+                    endScreen.SetActive(true);
+                    Time.timeScale = 0;
+                    timerText.text = "You Win!";
+                }
+                else
+                {
+                    StatsLose();
+                    endScreen.SetActive(true);
+                    Time.timeScale = 0;
+                    timerText.text = "You Lose!";
+                }
+
                 yield break;
             }
             
@@ -239,17 +261,40 @@ public class GameManager : MonoBehaviour
                 endScreen.SetActive(true);
                 Time.timeScale = 0;
                 timerText.text = "You Lose!";
+                StatsLose();
             }
             else if (enemyScore < playerScore)
             {
                 endScreen.SetActive(true);
                 Time.timeScale = 0;
                 timerText.text = "You Win!";
+                StatsWin(true);
             }
             else
             {
                 timerText.text = "Overtime!";
             }
         }
+    }
+
+
+    private void StatsWin(bool overtime)
+    {
+        if (hasDoneStats) { return; }
+        hasDoneStats = true;
+        PlayerPrefs.SetInt("winsAs" + StartManager.playerName, PlayerPrefs.GetInt("winsAs" + StartManager.playerName) + 1);
+        PlayerPrefs.SetInt("winsAgainst" + StartManager.enemyName, PlayerPrefs.GetInt("winsAgainst" + StartManager.enemyName) + 1);
+        if (overtime)
+        {
+            PlayerPrefs.SetInt("hasOvertimeWin" + StartManager.enemyName, 1);
+        }
+    }
+
+    private void StatsLose()
+    {
+        if (hasDoneStats) { return; }
+        hasDoneStats = true;
+        PlayerPrefs.SetInt("defeatsAs" + StartManager.playerName, PlayerPrefs.GetInt("defeatsAs" + StartManager.playerName) + 1);
+        PlayerPrefs.SetInt("defeatsAgainst" + StartManager.enemyName, PlayerPrefs.GetInt("defeatsAgainst" + StartManager.enemyName) + 1);
     }
 }
