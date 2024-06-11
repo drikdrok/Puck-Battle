@@ -57,6 +57,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 dragging = true;
+                puck.GetComponent<PuckController>().shotBy = "Player";
 
                 if (gameManager.doingTutorial)
                 {
@@ -83,7 +84,7 @@ public class PlayerController : MonoBehaviour
 
             if (puck != null)
             {
-                if (!puck.isInPlayerHalf)
+                if (dragging && !puck.isInPlayerHalf)
                 {
                     puck.gameObject.GetComponent<Rigidbody>().velocity *= 0.05f;
                     puck = null;
@@ -164,6 +165,14 @@ public class PlayerController : MonoBehaviour
                 gameManager.shootPuck();
               
             }
+        }
+    }
+
+    public void LoseGrib()
+    {
+        if (puck)
+        {
+            puck = null;
         }
     }
 

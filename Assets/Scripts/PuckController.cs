@@ -34,13 +34,10 @@ public class PuckController : MonoBehaviour
 
     private MeshRenderer meshRenderer;
 
-    private bool frozen = false;
+    public bool frozen = false;
 
     private bool invulnerable = false;
 
-
-    private Transform vikingPuck1;
-    private Transform vikingPuck2;
 
     [SerializeField] private GameObject tornadoPrefab;
     private Transform tornado;
@@ -55,6 +52,11 @@ public class PuckController : MonoBehaviour
 
     [SerializeField] private GameObject firePrefab;
     private Transform fireFlame;
+
+    public float timeSinceShot = 0;
+
+    [SerializeField] private GameObject joeEffectPrefab;
+    private Transform joeEffect;
 
 
     void Start()
@@ -82,6 +84,11 @@ public class PuckController : MonoBehaviour
     {
         tornado.position = transform.position;
         fireFlame.position = transform.position;
+        if (joeEffect)
+        {
+            joeEffect.position = transform.position;
+        }
+        timeSinceShot += Time.deltaTime;
         //For some reason this can't go in start
         if (!playerScore)
         {
@@ -142,7 +149,7 @@ public class PuckController : MonoBehaviour
         else if (other.transform.CompareTag("AimTarget"))
         {
             //Make puck not get stuck
-            transform.position = new Vector3(transform.position.x, transform.position.y + 0.6f, transform.position.z);
+            //transform.position += Vector3.up * 0.3f;
         }
     }
 
@@ -158,16 +165,25 @@ public class PuckController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Puck"))
         {
-            bounces++;
+            PuckController other = collision.gameObject.GetComponent<PuckController>();
+
+            if (other.poweredUp != "none")
+            {
+                if (other.timeSinceShot < 0.6f)
+                {
+                    playerScore.gameObject.GetComponent<PlayerController>().LoseGrib();
+                }
+            }
+
+
             if (poweredUp == "Yeti")
             {
-                PuckController other = collision.gameObject.GetComponent<PuckController>();
                 if (shotBy == "Player" && !other.isInPlayerHalf)
                 {
-                    DePower();
+                    DePower(true);
                     if (other.poweredUp == "Yeti")
                     {
-                        other.DePower();
+                        other.DePower(true);
                     }
                     else
                     {
@@ -177,10 +193,10 @@ public class PuckController : MonoBehaviour
                 }
                 else if (shotBy == "Enemy" && other.isInPlayerHalf)
                 {
-                    DePower();
+                    DePower(true);
                     if (other.poweredUp == "Yeti")
                     {
-                        other.DePower();
+                        other.DePower(true);
                     }
                     else
                     {
@@ -194,7 +210,7 @@ public class PuckController : MonoBehaviour
         else if (!collision.gameObject.CompareTag("Ground"))
         {
             bounces++;
-            DePower();
+            DePower(false);
         }
     }
 
@@ -214,16 +230,18 @@ public class PuckController : MonoBehaviour
             //meshRenderer.material = poweredMaterial;
             StartCoroutine(StartGrowing());
             fireFlame.GetComponent<ParticleSystem>().Play();
+            StartCoroutine(DepowerInSeconds(3f, true));
         }
         else if (type == "Mummy")
         {
             tornado.GetComponent<ParticleSystem>().Play();
             repulse.SetActive(true);
-            StartCoroutine(DepowerInSeconds(3));
+            StartCoroutine(DepowerInSeconds(3, true));
         }else if (type == "Joe")
         {
             meshRenderer.material = poweredMaterial;
             shotPower = 55;
+            joeEffect = Instantiate(joeEffectPrefab, transform.position, Quaternion.Euler(-90, 0, 0)).transform;
         }
         else
         {
@@ -231,9 +249,12 @@ public class PuckController : MonoBehaviour
         }
     }
 
-    public void DePower()
+    public void DePower(bool forced)
     {
-        if (poweredUp == "Viking" && bounces < 3) { return; }
+        if (!forced)
+        {
+            if ((poweredUp == "Viking" || poweredUp == "Yeti") && bounces < 3) { return; }
+        }
 
         if (poweredUp == "none") { return; }
 
@@ -260,10 +281,11 @@ public class PuckController : MonoBehaviour
     {
         rigidbody.velocity = direction * shotPower;
         shotBy = _shotBy;
+        timeSinceShot = 0;
 
-        if (poweredUp == "Yeti")
+        if (poweredUp == "Yeti" || poweredUp == "Joe")
         {
-            StartCoroutine(DepowerInSeconds(3));
+            StartCoroutine(DepowerInSeconds(3, true));
         }
     }
 
@@ -297,10 +319,10 @@ public class PuckController : MonoBehaviour
         invulnerable = false;
     }
 
-    public IEnumerator DepowerInSeconds(float duration)
+    public IEnumerator DepowerInSeconds(float duration, bool forced)
     {
         yield return new WaitForSeconds(duration);
-        DePower();
+        DePower(forced);
     }
 
     public IEnumerator StartGrowing()

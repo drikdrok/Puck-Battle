@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Opponent : MonoBehaviour
 {
@@ -17,17 +19,30 @@ public class Opponent : MonoBehaviour
 
     float timer = 2.5f;
 
-
     private GameObject[] targets;
 
 
     public bool disabled = false;
 
+
+    private Dictionary<string, (float lo, float hi)> shootTimesRanges;
+    private float shootTime = 2f;
+
+
     void Start()
     {
+
+        shootTimesRanges = new Dictionary<string, (float min, float max)>()
+        {
+            {"Joe", (2, 2.5f)},
+            {"Mummy", (1.4f, 2.4f) },
+            {"Viking", (0.8f, 1.7f) },
+            {"Yeti", (0.8f, 1.2f) }
+        };
+
         power = GetComponent<Power>();
         targets = GameObject.FindGameObjectsWithTag("AimTarget");
-        Debug.Log("Targets: " + targets.Length);
+        //Debug.Log("Targets: " + targets.Length);
 
         //Find a shoot area
         foreach(Transform t in area.transform)
@@ -53,12 +68,21 @@ public class Opponent : MonoBehaviour
 
         }
 
-        if (timer > 2 && area.pucks.Count > 0)
+        if (timer > shootTime && area.pucks.Count > 0)
         {
             int index = Random.Range(0, area.pucks.Count);
             selected = area.pucks[index];
             Debug.Log("areas: " + shootAreas.Count);
             shootAreaTarget = shootAreas[Random.Range(0, shootAreas.Count)];
+
+            if (selected.GetComponent<PuckController>().timeSinceShot <= 0.8f) { // Been too soon since shot, try again next frame
+                return;
+            }
+            if (selected.GetComponent<PuckController>().frozen)
+            {
+                return;
+            }
+
             timer = 0;
         }
 
@@ -81,11 +105,20 @@ public class Opponent : MonoBehaviour
 
                 selected = null;
                 timer = Random.Range(-0.1f, 0.1f);
+                UpdateShootTime();
             }
 
         }
 
 
         
+    }
+
+
+
+
+    private void UpdateShootTime()
+    {
+        shootTime = Random.Range(shootTimesRanges[StartManager.enemyName].lo, shootTimesRanges[StartManager.enemyName].hi);
     }
 }
