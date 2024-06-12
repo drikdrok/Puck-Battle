@@ -27,6 +27,7 @@ public class PauseScreen : MonoBehaviour
         panel.gameObject.SetActive(true);
         gameManager.DisablePlayers();
         Time.timeScale = 0;
+        SoundManager.instance.buttonClick.Play();
     }
 
     public void ResumeGame()
@@ -34,12 +35,14 @@ public class PauseScreen : MonoBehaviour
         paused = false;
         panel.gameObject.SetActive(false);
         gameManager.StartCountdown();
+        SoundManager.instance.buttonClick.Play();
 
     }
 
 
     public void ExitGame()
     {
+        SoundManager.instance.buttonClick.Play();
         SceneManager.LoadScene("Main Menu");
     }
 }

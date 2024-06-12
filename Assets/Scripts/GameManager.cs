@@ -62,12 +62,19 @@ public class GameManager : MonoBehaviour
 
         endScreen.SetActive(false);
 
+
+        Debug.Log("Do tut" + PlayerPrefs.GetInt("DoTutorial"));
         if (PlayerPrefs.GetInt("DoTutorial") == 1)
         {
             doingTutorial = true;
-            PlayerPrefs.SetInt("DoTutorial", 0);
+            tutorial.gameObject.SetActive(true);
+           // PlayerPrefs.SetInt("DoTutorial", 0);
         }
 
+        SoundManager.instance.EnableAllSounds();
+        SoundManager.instance.countdown.Play();
+        SoundManager.instance.ambient.Stop();
+        SoundManager.instance.ambient.Play();
     }
 
     // Update is called once per frame
@@ -122,11 +129,14 @@ public class GameManager : MonoBehaviour
         if (countDownTime > 0)
         {
             StartCoroutine(DoCountDown());
+            SoundManager.instance.countdown.Play();
         }
         else
         {
             countDownFadeOut = true;
             countDownText.text = "GO!";
+
+            SoundManager.instance.startGame.Play();
 
             if (doingTutorial) 
             {
@@ -162,6 +172,10 @@ public class GameManager : MonoBehaviour
 
                 if (playerScore == enemyScore)
                 {
+                    if (!overtime)
+                    {
+                        SoundManager.instance.overtime.Play();
+                    }
                     overtime = true;
                 }else if (playerScore > enemyScore)
                 {
@@ -230,7 +244,6 @@ public class GameManager : MonoBehaviour
             if (!pauseScreen.paused)
             {
                 tutorial.dragPuck();
-                Time.timeScale = 1;
             }
         }
     }
@@ -281,6 +294,7 @@ public class GameManager : MonoBehaviour
     private void StatsWin(bool overtime)
     {
         if (hasDoneStats) { return; }
+        SoundManager.instance.winSound.Play();
         hasDoneStats = true;
         PlayerPrefs.SetInt("winsAs" + StartManager.playerName, PlayerPrefs.GetInt("winsAs" + StartManager.playerName) + 1);
         PlayerPrefs.SetInt("winsAgainst" + StartManager.enemyName, PlayerPrefs.GetInt("winsAgainst" + StartManager.enemyName) + 1);
@@ -293,6 +307,7 @@ public class GameManager : MonoBehaviour
     private void StatsLose()
     {
         if (hasDoneStats) { return; }
+        SoundManager.instance.loseSound.Play();
         hasDoneStats = true;
         PlayerPrefs.SetInt("defeatsAs" + StartManager.playerName, PlayerPrefs.GetInt("defeatsAs" + StartManager.playerName) + 1);
         PlayerPrefs.SetInt("defeatsAgainst" + StartManager.enemyName, PlayerPrefs.GetInt("defeatsAgainst" + StartManager.enemyName) + 1);

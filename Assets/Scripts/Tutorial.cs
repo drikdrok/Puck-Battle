@@ -35,6 +35,8 @@ public class Tutorial : MonoBehaviour
             text.text = "When a Puck is in a Red Shooting Area, Use Right Mouse Button to Charge up a Shot!";
             position.position = new Vector3(50, 135, 0);
             panel.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 110);
+            Time.timeScale = 1;
+
         }
     }
 
@@ -51,6 +53,7 @@ public class Tutorial : MonoBehaviour
         {
             stage = 3;
             gameObject.SetActive(false);
+            PlayerPrefs.SetInt("DoTutorial", 0);
         }
     }
 }

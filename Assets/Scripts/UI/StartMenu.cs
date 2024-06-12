@@ -40,14 +40,22 @@ public class StartMenu : MonoBehaviour
 
     Dictionary<string, bool> isUnlocked;
 
+
+    public Sprite soundOn;
+    public Sprite soundOff;
+    public Image soundButton;
+
+
+    public Toggle tutorialToggle;
+
     void Start()
     {
 
         descriptions = new Dictionary<string, string>() {
             { "Joe", "Just an average Joe"},
             { "Mummy", "A relic of an age long gone, yet still haunting the present"},
-            { "Viking", "The northern brute - his pucks turn to fire!" },
-            { "Yeti", "An Arctic Anomaly" }
+            { "Viking", "The northern brute - his pucks turn into fire!" },
+            { "Yeti", "An Arctic Anomaly, freezing your pucks in place" }
         };
 
         unlockCriteria = new Dictionary<string, string>() {
@@ -65,15 +73,32 @@ public class StartMenu : MonoBehaviour
         };
 
 
-
         PlayerSelect.SetActive(false);
         EnemySelect.SetActive(false);
         SettingsScreen.SetActive(false);
         StartScreen.SetActive(true);
 
         checkLocks();
+
+        SoundManager.instance.DisableAllSounds();
         SelectPlayer("Joe");
-        
+        SoundManager.instance.EnableMenuSounds();
+
+        if (PlayerPrefs.GetInt("DisableSoundEffects") == 0)
+        {
+            soundButton.sprite = soundOn;
+        }
+        else
+        {
+            soundButton.sprite = soundOff;
+        }
+
+        Time.timeScale = 1;
+
+
+        Debug.Log("Tutorial: " + PlayerPrefs.GetInt("DoTutorial"));
+
+
     }
     void Update()
     {
@@ -102,6 +127,8 @@ public class StartMenu : MonoBehaviour
         {
             playerSelectButton.interactable = false;
         }
+
+        SoundManager.instance.buttonClick.Play();
 
 
     }
@@ -169,6 +196,7 @@ public class StartMenu : MonoBehaviour
         enemyOvertimeText.text = PlayerPrefs.GetInt("hasOvertimeWin" + enemy) == 1 ? "Yes" : "No";
 
         enemyMatchupText.text = StartManager.playerName + " V " + enemy;
+        SoundManager.instance.buttonClick.Play();
     }
 
     public void ShowPlayerSelect()
@@ -176,18 +204,34 @@ public class StartMenu : MonoBehaviour
         StartScreen.SetActive(false);
         EnemySelect.SetActive(false);
         PlayerSelect.SetActive(true);
+        SoundManager.instance.buttonClick.Play();
+
     }
     public void ShowEnemySelect()
     {
         EnemySelect.SetActive(true);
         PlayerSelect.SetActive(false);
         SelectEnemy("Joe");
+        SoundManager.instance.buttonClick.Play();
     }
 
     public void ShowSettingsScreen()
     {
         SettingsScreen.SetActive(true);
         StartScreen.SetActive(false);
+        SoundManager.instance.buttonClick.Play();
+
+        if (PlayerPrefs.GetInt("DoTutorial") == 0) //Changing isOn triggers toggle unity is stupid
+        {
+            tutorialToggle.isOn = false;
+            PlayerPrefs.SetInt("DoTutorial", 0);
+        }
+        else
+        {
+            tutorialToggle.isOn = true;
+            PlayerPrefs.SetInt("DoTutorial", 1);
+        }
+
     }
 
     public void HideSettingsScreen()
@@ -195,22 +239,60 @@ public class StartMenu : MonoBehaviour
         SettingsScreen.SetActive(false);
         StartScreen.SetActive(true);
         PlayerSelect.SetActive(false);
+        SoundManager.instance.buttonClick.Play();
     }
 
     public void ResetEverything()
     {
         PlayerPrefs.DeleteAll();
         PlayerPrefs.SetInt("DoTutorial", 1);
+        SoundManager.instance.buttonClick.Play();
     }
 
 
     public void StartGame()
     {
+        SoundManager.instance.buttonClick.Play();
         SceneManager.LoadScene("SampleScene");
     }
 
     public void Quit()
     {
+        SoundManager.instance.buttonClick.Play();
         Application.Quit();
+
+    }
+
+
+    public void ToggleSound()
+    {
+        if (PlayerPrefs.GetInt("DisableSoundEffects") == 0)
+        {
+            SoundManager.instance.DisableAllSounds();
+            PlayerPrefs.SetInt("DisableSoundEffects", 1);
+            soundButton.sprite = soundOff;
+        }
+        else
+        {
+            PlayerPrefs.SetInt("DisableSoundEffects", 0);
+            soundButton.sprite = soundOn;
+            SoundManager.instance.EnableMenuSounds();
+        }
+        SoundManager.instance.buttonClick.Play();
+    }
+
+
+    public void ToggleTutorial()
+    {
+        if (PlayerPrefs.GetInt("DoTutorial") == 0)
+        {
+            PlayerPrefs.SetInt("DoTutorial", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("DoTutorial", 0);
+        }
+
+        Debug.Log("tuts:" + PlayerPrefs.GetInt("DoTutorial"));
     }
 }

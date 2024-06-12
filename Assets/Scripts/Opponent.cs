@@ -72,7 +72,6 @@ public class Opponent : MonoBehaviour
         {
             int index = Random.Range(0, area.pucks.Count);
             selected = area.pucks[index];
-            Debug.Log("areas: " + shootAreas.Count);
             shootAreaTarget = shootAreas[Random.Range(0, shootAreas.Count)];
 
             if (selected.GetComponent<PuckController>().timeSinceShot <= 0.8f) { // Been too soon since shot, try again next frame

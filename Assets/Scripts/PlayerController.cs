@@ -130,7 +130,7 @@ public class PlayerController : MonoBehaviour
 
     private void FollowMouse()
     {
-        if (dragging)
+        if (dragging && !puck.frozen)
         {
             float boardWidth = 16.5f;
             //puck.gameObject.GetComponent<Rigidbody>().velocity = (mousePos - puck.transform.position) * 10f;
