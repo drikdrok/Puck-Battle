@@ -58,6 +58,8 @@ public class PuckController : MonoBehaviour
     [SerializeField] private GameObject joeEffectPrefab;
     private Transform joeEffect;
 
+    [SerializeField] private GameObject scoreEffectPrefab;
+
 
     void Start()
     {
@@ -121,12 +123,14 @@ public class PuckController : MonoBehaviour
                 if (playerScore)
                 {
                     playerScore.AddScore(1);
+                    SoundManager.instance.playerScore.Play();
                 }
             }
             else
             {
                 if (enemyScore) { 
                     enemyScore.AddScore(1);
+                    SoundManager.instance.enemyScore.Play();
                 }
             }
 
@@ -141,6 +145,8 @@ public class PuckController : MonoBehaviour
             {
                 PuckSpawner.instance.NewPuck();
             }
+
+            Instantiate(scoreEffectPrefab, transform.position, Quaternion.Euler(-90, 0, 0));
 
             Destroy(tornado.gameObject);
             Destroy(fireFlame.gameObject);
@@ -165,13 +171,18 @@ public class PuckController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Puck"))
         {
+            SoundManager.instance.puckCollide.Play();
             PuckController other = collision.gameObject.GetComponent<PuckController>();
 
             if (other.poweredUp != "none")
             {
-                if (other.timeSinceShot < 0.6f)
+                if (other.timeSinceShot < 0.6f )
                 {
-                    playerScore.gameObject.GetComponent<PlayerController>().LoseGrib();
+                    if (playerScore.gameObject.GetComponent<PlayerController>().puck == this) // This don't work
+                    {
+                        Debug.Log("Grip lost");
+                        playerScore.gameObject.GetComponent<PlayerController>().LoseGrib();
+                    }
                 }
             }
 
@@ -209,6 +220,7 @@ public class PuckController : MonoBehaviour
         }
         else if (!collision.gameObject.CompareTag("Ground"))
         {
+            SoundManager.instance.puckWallImpact.Play();
             bounces++;
             DePower(false);
         }
@@ -222,6 +234,7 @@ public class PuckController : MonoBehaviour
         }
 
         poweredUp = type;
+        SoundManager.instance.PlayPowerup(type);
         if (type == "Yeti")
         {
             meshRenderer.material = poweredYetiMaterial;
@@ -286,6 +299,11 @@ public class PuckController : MonoBehaviour
         if (poweredUp == "Yeti" || poweredUp == "Joe")
         {
             StartCoroutine(DepowerInSeconds(3, true));
+        }
+
+        if (poweredUp == "Viking")
+        {
+            SoundManager.instance.vikingShoot.Play();
         }
     }
 

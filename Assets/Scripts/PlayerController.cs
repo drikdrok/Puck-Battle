@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     Power power;
 
-    PuckController puck = null;
+    public PuckController puck = null;
 
     public bool dragging = false;
     public bool shooting = false;
@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
             {
                 puck = hit.collider.gameObject.GetComponent<PuckController>();
 
-                if (puck.shotBy == "enemy" && puck.poweredUp != "none")
+                if (puck.shotBy == "Enemy" && puck.timeSinceShot <= 0.6f)
                 {
                     puck = null;
                 }
@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
             {
                 dragging = true;
                 puck.GetComponent<PuckController>().shotBy = "Player";
+                puck.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
                 if (gameManager.doingTutorial)
                 {
@@ -86,7 +87,6 @@ public class PlayerController : MonoBehaviour
             {
                 if (dragging && !puck.isInPlayerHalf)
                 {
-                    puck.gameObject.GetComponent<Rigidbody>().velocity *= 0.05f;
                     puck = null;
                     dragging = false;
                     shooting = false;
@@ -98,7 +98,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonUp(0)) {
             if (puck)
             {
-                puck.gameObject.GetComponent<Rigidbody>().velocity *= 0.1f;
+                //puck.gameObject.GetComponent<Rigidbody>().velocity *= 0.1f;
             }
             puck = null;
             dragging = false;
@@ -123,7 +123,7 @@ public class PlayerController : MonoBehaviour
             mousePosition.z = (puck.transform.position - Camera.main.transform.position).magnitude;
         }
         Vector3 pos = Camera.main.ScreenToWorldPoint(mousePosition);
-        pos.y = 1;
+        pos.y = 1.05f;
         return pos;
     }
 
@@ -132,7 +132,11 @@ public class PlayerController : MonoBehaviour
     {
         if (dragging)
         {
-            puck.gameObject.GetComponent<Rigidbody>().velocity = (mousePos - puck.transform.position) * 10f;
+            float boardWidth = 16.5f;
+            //puck.gameObject.GetComponent<Rigidbody>().velocity = (mousePos - puck.transform.position) * 10f;
+            Vector3 newPos = new Vector3(Mathf.Clamp(mousePos.x, -boardWidth, boardWidth), mousePos.y, Mathf.Clamp(mousePos.z, -20.5f, -1.5f));
+            
+            puck.gameObject.GetComponent<Transform>().position = Vector3.Lerp(puck.gameObject.GetComponent<Transform>().position, newPos, 14 * Time.deltaTime);
         }
     }
 

@@ -194,6 +194,7 @@ public class StartMenu : MonoBehaviour
     {
         SettingsScreen.SetActive(false);
         StartScreen.SetActive(true);
+        PlayerSelect.SetActive(false);
     }
 
     public void ResetEverything()

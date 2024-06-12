@@ -213,3 +213,5 @@ MonoBehaviour:
   timeSinceShot: 0
   joeEffectPrefab: {fileID: 6617399383085034231, guid: 6033659a268c99042a2f44c34cfa3df8,
     type: 3}
+  scoreEffectPrefab: {fileID: 8679731169873176084, guid: 9a3454670d82f1946b3e8df5a04100c1,
+    type: 3}

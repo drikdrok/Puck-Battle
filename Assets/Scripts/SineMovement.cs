@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SineMovement : MonoBehaviour
@@ -16,6 +17,12 @@ public class SineMovement : MonoBehaviour
     private void Start()
     {
         originalPosition = transform.position;
+
+        //Can't be bothered to manually change everything so we doing this lol
+        if (gameObject.CompareTag("Goal"))
+        {
+            GetComponent<BoxCollider>().size = new Vector3(1, 10, 1);
+        }
     }
 
     void Update()
