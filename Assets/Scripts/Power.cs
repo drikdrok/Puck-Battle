@@ -9,7 +9,7 @@ public class Power : MonoBehaviour
     public Slider slider;
     public Image fill;
 
-    public float speed = 3;
+    public float speed = 3.5f;
 
 
     float value = 0;

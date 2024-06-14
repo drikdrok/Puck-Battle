@@ -22,7 +22,7 @@ public class ShotIndicator : MonoBehaviour
         
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (!puck) return;
 

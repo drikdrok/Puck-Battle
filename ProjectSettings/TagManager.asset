@@ -12,6 +12,7 @@ TagManager:
   - Half
   - Enemy
   - Repulser
+  - PromoCam
   layers:
   - Default
   - TransparentFX

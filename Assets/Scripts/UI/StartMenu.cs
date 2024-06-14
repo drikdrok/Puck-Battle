@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -232,6 +233,11 @@ public class StartMenu : MonoBehaviour
             PlayerPrefs.SetInt("DoTutorial", 1);
         }
 
+    }
+
+    public void ShowCredits()
+    {
+        SceneManager.LoadScene("Credits");
     }
 
     public void HideSettingsScreen()

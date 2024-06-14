@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
             {
                 puck = hit.collider.gameObject.GetComponent<PuckController>();
 
-                if (puck.shotBy == "Enemy" && puck.timeSinceShot <= 0.6f)
+                if (puck.shotBy == "Enemy" && puck.timeSinceShot <= 1f)
                 {
                     puck = null;
                 }
@@ -80,6 +80,8 @@ public class PlayerController : MonoBehaviour
                 {
                     power.SetValue(0);
                     puck.SetPowered(StartManager.playerName);
+                    gameManager.Power(); // This is for tutorial
+                    
                 }
             }
 
@@ -132,6 +134,7 @@ public class PlayerController : MonoBehaviour
     {
         if (dragging && !puck.frozen)
         {
+            puck.GetComponent<Rigidbody>().velocity = Vector3.zero;
             float boardWidth = 16.5f;
             //puck.gameObject.GetComponent<Rigidbody>().velocity = (mousePos - puck.transform.position) * 10f;
             Vector3 newPos = new Vector3(Mathf.Clamp(mousePos.x, -boardWidth, boardWidth), mousePos.y, Mathf.Clamp(mousePos.z, -20.5f, -1.5f));

@@ -312,4 +312,10 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("defeatsAs" + StartManager.playerName, PlayerPrefs.GetInt("defeatsAs" + StartManager.playerName) + 1);
         PlayerPrefs.SetInt("defeatsAgainst" + StartManager.enemyName, PlayerPrefs.GetInt("defeatsAgainst" + StartManager.enemyName) + 1);
     }
+
+
+    public void Power()
+    {
+        tutorial.Power();
+    }
 }
